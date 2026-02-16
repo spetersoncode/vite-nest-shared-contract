@@ -1,0 +1,17 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.pnpm-approve-builds.json
+
+# NestJS
+backend/dist/
+
+# Vite
+frontend/dist/
+
+# Shared contract builds
+shared/contract/dist/
+
+# Logs
+*.log
