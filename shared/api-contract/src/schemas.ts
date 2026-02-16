@@ -30,10 +30,15 @@ export type Fighter = z.infer<typeof FighterSchema>;
 export type FighterStats = z.infer<typeof FighterStatsSchema>;
 
 // ── Battle ─────────────────────────────────────────────────────────
-export const BattleRequestSchema = z.object({
-  attackerId: z.string(),
-  defenderId: z.string(),
-});
+export const BattleRequestSchema = z
+  .object({
+    attackerId: z.string(),
+    defenderId: z.string(),
+  })
+  .refine((data) => data.attackerId !== data.defenderId, {
+    message: "A fighter cannot battle itself",
+    path: ["defenderId"],
+  });
 
 export const BattleOutcomeSchema = z.enum(["attacker", "defender", "draw"]);
 
