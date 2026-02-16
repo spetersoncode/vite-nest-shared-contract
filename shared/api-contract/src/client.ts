@@ -1,6 +1,19 @@
 import type * as z from "zod";
 import { routes, type Routes, type RouteName } from "./routes.js";
 
+// ── Extract path param names at the type level ──────────────────
+type ExtractParams<T extends string> =
+  T extends `${string}:${infer P}/${infer Rest}`
+    ? P | ExtractParams<Rest>
+    : T extends `${string}:${infer P}`
+      ? P
+      : never;
+
+type PathParams<Path extends string> =
+  ExtractParams<Path> extends never
+    ? void
+    : { pathParams: Record<ExtractParams<Path>, string> };
+
 // ── Infer input/output types from route definitions ────────────────
 type InferInput<R> = R extends { input: z.ZodTypeAny }
   ? z.infer<R["input"]>
@@ -10,15 +23,21 @@ type InferOutput<R> = R extends { output: z.ZodTypeAny }
   ? z.infer<R["output"]>
   : unknown;
 
+type InferPath<R> = R extends { path: infer P extends string } ? P : string;
+
 type ApiClient = {
   [K in RouteName]: InferInput<Routes[K]> extends void
-    ? (params?: { pathParams?: Record<string, string> }) => Promise<
-        InferOutput<Routes[K]>
-      >
-    : (
-        input: InferInput<Routes[K]>,
-        params?: { pathParams?: Record<string, string> },
-      ) => Promise<InferOutput<Routes[K]>>;
+    ? PathParams<InferPath<Routes[K]>> extends void
+      ? () => Promise<InferOutput<Routes[K]>>
+      : (params: PathParams<InferPath<Routes[K]>>) => Promise<
+          InferOutput<Routes[K]>
+        >
+    : PathParams<InferPath<Routes[K]>> extends void
+      ? (input: InferInput<Routes[K]>) => Promise<InferOutput<Routes[K]>>
+      : (
+          input: InferInput<Routes[K]>,
+          params: PathParams<InferPath<Routes[K]>>,
+        ) => Promise<InferOutput<Routes[K]>>;
 };
 
 // ── Build path with params ─────────────────────────────────────────
@@ -52,12 +71,10 @@ export function createApiClient(baseUrl: string): ApiClient {
       const path = buildPath(route.path, params?.pathParams);
       const url = `${baseUrl}${path}`;
 
-      const options: RequestInit = {
-        method: route.method,
-        headers: { "Content-Type": "application/json" },
-      };
+      const options: RequestInit = { method: route.method };
 
-      if (route.method === "POST" && input !== undefined) {
+      if (input !== undefined) {
+        options.headers = { "Content-Type": "application/json" };
         options.body = JSON.stringify(input);
       }
 
@@ -68,7 +85,8 @@ export function createApiClient(baseUrl: string): ApiClient {
         throw new Error(`API error ${response.status}: ${body}`);
       }
 
-      return response.json();
+      const data = await response.json();
+      return route.output.parse(data);
     };
   }
 

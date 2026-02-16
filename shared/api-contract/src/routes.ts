@@ -47,7 +47,7 @@ export const routes = {
     path: "/leaderboard",
     output: z_runtime.array(LeaderboardEntrySchema),
   },
-} as const;
+} as const satisfies Record<string, RouteDefinition<any, any>>;
 
 // ── Type helpers ───────────────────────────────────────────────────
 export type Routes = typeof routes;
