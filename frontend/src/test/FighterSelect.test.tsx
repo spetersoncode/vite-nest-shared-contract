@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { FighterSelect } from "../pages/FighterSelect";
-import type { Fighter } from "@emoji-battle/contract";
+import type { Fighter } from "@emoji-battle/api-contract";
 
 const mockFighters: Fighter[] = [
   {

@@ -1,8 +1,8 @@
 import { Controller, Post, Get, Body, UsePipes } from "@nestjs/common";
 import { BattleService } from "./battle.service";
-import { BattleRequestSchema } from "@emoji-battle/contract";
+import { BattleRequestSchema } from "@emoji-battle/api-contract";
 import { ZodValidationPipe } from "../validation/zod.pipe";
-import type { BattleRequest } from "@emoji-battle/contract";
+import type { BattleRequest } from "@emoji-battle/api-contract";
 
 @Controller("battle")
 export class BattleController {

@@ -4,7 +4,7 @@ import {
   BattleRequestSchema,
   BattleResultSchema,
   LeaderboardEntrySchema,
-} from "./schemas";
+} from "./schemas.js";
 
 // ── Route definition type ──────────────────────────────────────────
 export interface RouteDefinition<

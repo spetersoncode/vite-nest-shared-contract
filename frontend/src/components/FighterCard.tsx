@@ -1,4 +1,4 @@
-import type { Fighter } from "@emoji-battle/contract";
+import type { Fighter } from "@emoji-battle/api-contract";
 
 const categoryColors: Record<string, string> = {
   animal: "border-amber-400 bg-amber-950/40",

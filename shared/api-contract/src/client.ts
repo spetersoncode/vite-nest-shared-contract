@@ -1,5 +1,5 @@
 import type * as z from "zod";
-import { routes, type Routes, type RouteName } from "./routes";
+import { routes, type Routes, type RouteName } from "./routes.js";
 
 // ── Infer input/output types from route definitions ────────────────
 type InferInput<R> = R extends { input: z.ZodTypeAny }

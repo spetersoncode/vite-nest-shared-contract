@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FightersController } from "../src/fighters/fighters.controller";
 import { FightersService } from "../src/fighters/fighters.service";
-import { FighterSchema, FIGHTER_ROSTER } from "@emoji-battle/contract";
+import { FighterSchema, FIGHTER_ROSTER } from "@emoji-battle/api-contract";
 import * as z from "zod";
 import { mockLoggerProvider } from "./helpers";
 

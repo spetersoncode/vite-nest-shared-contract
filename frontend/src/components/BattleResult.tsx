@@ -1,4 +1,4 @@
-import type { BattleResult as BattleResultType } from "@emoji-battle/contract";
+import type { BattleResult as BattleResultType } from "@emoji-battle/api-contract";
 
 interface BattleResultProps {
   result: BattleResultType;

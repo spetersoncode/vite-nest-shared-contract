@@ -8,7 +8,7 @@ export {
   LeaderboardEntrySchema,
   CATEGORY_ADVANTAGE,
   FIGHTER_ROSTER,
-} from "./schemas";
+} from "./schemas.js";
 
 export type {
   Category,
@@ -17,9 +17,9 @@ export type {
   BattleRequest,
   BattleResult,
   LeaderboardEntry,
-} from "./schemas";
+} from "./schemas.js";
 
-export { routes } from "./routes";
-export type { Routes, RouteName, RouteDefinition } from "./routes";
+export { routes } from "./routes.js";
+export type { Routes, RouteName, RouteDefinition } from "./routes.js";
 
-export { createApiClient } from "./client";
+export { createApiClient } from "./client.js";

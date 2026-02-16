@@ -1,4 +1,4 @@
-# @emoji-battle/contract
+# @emoji-battle/api-contract
 
 The shared API contract package. This is the **single source of truth** for all API shapes, validation, and the typed client. Both the NestJS backend and React frontend depend on this package.
 
@@ -79,51 +79,34 @@ This is ~70 lines of code. It uses `fetch`, has zero dependencies beyond Zod, an
 
 ## How It's Built
 
-The package compiles to **both CJS and ESM** because the two consumers need different module formats:
-
-- **NestJS** (backend) → CommonJS (`require()`)
-- **Vite** (frontend) → ESM (`import`)
-
-```
-dist/
-├── cjs/    ← CommonJS output (tsconfig.json)
-└── esm/    ← ESM output (tsconfig.esm.json)
-```
-
-The `package.json` uses conditional exports to serve the right format:
+The package is **ESM-only** with a single `tsc` build:
 
 ```json
-"exports": {
-  ".": {
-    "import": {
-      "types": "./dist/esm/index.d.ts",
-      "default": "./dist/esm/index.js"
-    },
-    "require": {
-      "types": "./dist/cjs/index.d.ts",
-      "default": "./dist/cjs/index.js"
+{
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
   }
 }
 ```
 
-### Why Two Builds?
+One `tsconfig.json`, one `dist/` directory, one compilation step.
 
-We tried alternatives:
+### Why ESM-only works
 
-- **Raw TypeScript source** (`"main": "./src/index.ts"`) — Works in dev with Vite (it bundles TS natively), but NestJS's `tsc` compilation doesn't re-compile workspace dependencies. At runtime, Node tries to import raw `.ts` files and fails.
-- **ESM only** — NestJS compiles to CJS by default. When the compiled backend `require()`s an ESM-only package, Node throws `ERR_REQUIRE_ESM`.
-- **CJS only** — Vite/Rollup can't tree-shake CJS and throws `"X" is not exported` errors on named exports.
+Both consumers handle ESM without issues:
 
-Dual build is the boring answer that works everywhere.
+- **Frontend (Vite)** — natively ESM, imports the contract directly.
+- **Backend (NestJS)** — compiles to CJS, but Node 22+ supports `require()` of ESM packages natively. No wrapper, no flag, just works.
 
-### Import Extensions
+Previously the contract compiled twice (CJS + ESM) with conditional exports. The dual build was eliminated once we confirmed Node 22+ `require(ESM)` support.
 
-Source files use **extensionless imports** (`from "./schemas"`, not `from "./schemas.js"`):
+### Import extensions
 
-- `tsc` with `module: "commonjs"` + `moduleResolution: "node"` resolves them fine
-- `tsc` with `module: "ESNext"` + `moduleResolution: "bundler"` resolves them fine
-- ESM purists will object, but `.js` extensions break CJS resolution in this setup
+Source files use `.js` extensions in relative imports (`from "./schemas.js"`), as required by Node's ESM resolver and TypeScript's `"module": "nodenext"`. This is the ESM standard — the `.js` extension refers to the compiled output file that will exist at runtime.
 
 ## Usage
 
@@ -131,34 +114,34 @@ Source files use **extensionless imports** (`from "./schemas"`, not `from "./sch
 
 ```ts
 // Validation pipe — runtime schema checking
-import { BattleRequestSchema } from "@emoji-battle/contract";
+import { BattleRequestSchema } from "@emoji-battle/api-contract";
 
 @Post()
 @UsePipes(new ZodValidationPipe(BattleRequestSchema))
 fight(@Body() body: BattleRequest) { ... }
 
 // Types for service logic
-import { type Fighter, CATEGORY_ADVANTAGE } from "@emoji-battle/contract";
+import { type Fighter, CATEGORY_ADVANTAGE, FIGHTER_ROSTER } from "@emoji-battle/api-contract";
 ```
 
 ### Frontend (React)
 
 ```ts
 // Typed API client
-import { createApiClient } from "@emoji-battle/contract";
+import { createApiClient } from "@emoji-battle/api-contract";
 const api = createApiClient("http://localhost:3000");
 
 // Types for components
-import type { Fighter, BattleResult } from "@emoji-battle/contract";
+import type { Fighter, BattleResult } from "@emoji-battle/api-contract";
 ```
 
 ## Commands
 
 ```bash
-# Build both CJS and ESM
+# Build
 pnpm build
 
-# Watch mode (CJS only, for backend dev)
+# Watch mode (for dev)
 pnpm dev
 ```
 
@@ -168,6 +151,6 @@ To add a new endpoint:
 
 1. Add Zod schemas to `schemas.ts`
 2. Add the route to `routes.ts`
-3. Rebuild: `pnpm --filter @emoji-battle/contract build`
+3. Rebuild: `pnpm --filter @emoji-battle/api-contract build`
 4. Backend: add controller/service using the schema
 5. Frontend: the typed client already has the new method

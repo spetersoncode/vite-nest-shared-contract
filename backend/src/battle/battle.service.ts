@@ -4,7 +4,7 @@ import {
   CATEGORY_ADVANTAGE,
   type BattleResult,
   type Fighter,
-} from "@emoji-battle/contract";
+} from "@emoji-battle/api-contract";
 import { FightersService } from "../fighters/fighters.service";
 import { randomUUID } from "node:crypto";
 

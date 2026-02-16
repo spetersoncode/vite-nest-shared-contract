@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 import { FightersService } from "../fighters/fighters.service";
-import type { LeaderboardEntry } from "@emoji-battle/contract";
+import type { LeaderboardEntry } from "@emoji-battle/api-contract";
 
 @Injectable()
 export class LeaderboardService {

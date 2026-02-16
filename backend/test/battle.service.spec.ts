@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { BattleService } from "../src/battle/battle.service";
 import { FightersService } from "../src/fighters/fighters.service";
-import { CATEGORY_ADVANTAGE } from "@emoji-battle/contract";
+import { CATEGORY_ADVANTAGE } from "@emoji-battle/api-contract";
 import { mockLoggerProvider } from "./helpers";
 
 describe("BattleService", () => {

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFighters } from "../hooks/useFighters";
 import { FighterCard } from "../components/FighterCard";
-import type { Fighter } from "@emoji-battle/contract";
+import type { Fighter } from "@emoji-battle/api-contract";
 
 export function FighterSelect() {
   const { data: fighters, isLoading, error } = useFighters();

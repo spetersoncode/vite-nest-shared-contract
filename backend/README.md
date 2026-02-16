@@ -1,6 +1,6 @@
 # @emoji-battle/backend
 
-NestJS API server for Emoji Battle Arena. Imports Zod schemas and types from `@emoji-battle/contract` — no local schema definitions, no DTOs.
+NestJS API server for Emoji Battle Arena. Imports Zod schemas and types from `@emoji-battle/api-contract` — no local schema definitions, no DTOs.
 
 ## Structure
 
@@ -31,7 +31,7 @@ src/
 The `ZodValidationPipe` accepts any Zod schema and validates incoming request bodies:
 
 ```ts
-import { BattleRequestSchema } from "@emoji-battle/contract";
+import { BattleRequestSchema } from "@emoji-battle/api-contract";
 
 @Post()
 @UsePipes(new ZodValidationPipe(BattleRequestSchema))
@@ -47,7 +47,7 @@ If validation fails, it returns a 400 with structured Zod error issues. The same
 Services import types and game constants directly:
 
 ```ts
-import { type Fighter, CATEGORY_ADVANTAGE, FIGHTER_ROSTER } from "@emoji-battle/contract";
+import { type Fighter, CATEGORY_ADVANTAGE, FIGHTER_ROSTER } from "@emoji-battle/api-contract";
 ```
 
 No local type definitions. If a field changes in the contract, the backend gets a type error.
@@ -84,6 +84,25 @@ const module = await Test.createTestingModule({
 
 Everything is in-memory. No database. Restart the server and stats reset. This is a demo project.
 
+## Testing
+
+Tests use **Vitest** with `unplugin-swc` for decorator metadata support. NestJS's `@nestjs/testing` module is test-runner-agnostic — despite NestJS scaffolding with Jest by default, `Test.createTestingModule()` works identically under Vitest.
+
+The SWC plugin is needed because Vitest uses esbuild by default, which doesn't support `emitDecoratorMetadata`. SWC does, so NestJS's constructor-based dependency injection resolves correctly in tests:
+
+```ts
+// vitest.config.ts
+import swc from "unplugin-swc";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: { globals: true },
+  plugins: [swc.vite({ module: { type: "es6" } })],
+});
+```
+
+The `globals: true` option provides `describe`, `it`, and `expect` without imports — matching Jest's API, so test files work without modification.
+
 ## Commands
 
 ```bash
@@ -93,7 +112,7 @@ pnpm dev
 # Build
 pnpm build
 
-# Run tests (Jest, 12 tests)
+# Run tests (Vitest, 12 tests)
 pnpm test
 
 # Start production build
@@ -102,13 +121,9 @@ pnpm start
 
 ## NestJS-Specific Gotchas
 
-### Don't Use `tsx` for Dev
+### Don't Use `tsx` or esbuild for Dev
 
-`tsx` uses esbuild, which doesn't support `emitDecoratorMetadata`. NestJS DI will silently fail — injected services are `undefined`. Use `nest start --watch` instead.
-
-### Jest, Not Vitest
-
-NestJS's `@nestjs/testing` module is designed for Jest. `Test.createTestingModule()`, DI compilation, and module overrides all assume Jest. The frontend uses Vitest (Vite's native test runner). Two test runners in one monorepo is normal.
+`tsx` and esbuild do **not** support `emitDecoratorMetadata`. NestJS DI will silently fail — injected services are `undefined`. Use `nest start --watch` (which uses `tsc`) for dev mode.
 
 ### The `ZodValidationPipe`
 

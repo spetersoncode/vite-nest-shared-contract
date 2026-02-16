@@ -1,6 +1,6 @@
 # @emoji-battle/frontend
 
-Vite + React + TanStack Query frontend for Emoji Battle Arena. Uses the typed API client and types from `@emoji-battle/contract` — no local API types, no manual fetch calls.
+Vite + React + TanStack Query frontend for Emoji Battle Arena. Uses the typed API client and types from `@emoji-battle/api-contract` — no local API types, no manual fetch calls.
 
 ## Structure
 
@@ -37,7 +37,7 @@ The entire API layer is two lines:
 
 ```ts
 // src/api/client.ts
-import { createApiClient } from "@emoji-battle/contract";
+import { createApiClient } from "@emoji-battle/api-contract";
 export const api = createApiClient("http://localhost:3000");
 ```
 
@@ -72,7 +72,7 @@ export function useBattle() {
 Components import types directly from the contract:
 
 ```ts
-import type { Fighter } from "@emoji-battle/contract";
+import type { Fighter } from "@emoji-battle/api-contract";
 
 interface FighterCardProps {
   fighter: Fighter;  // ← same type the API returns
@@ -116,6 +116,8 @@ Vitest + React Testing Library. Tests mock the API client and verify:
 - Loading and error states work
 - Battle mutation fires with correct params
 
+Vitest is installed as a root workspace dependency shared with the backend.
+
 ```bash
 pnpm test    # 5 tests
 ```
@@ -138,13 +140,3 @@ pnpm test
 # Lint
 pnpm lint
 ```
-
-## Scaffolding
-
-This was created with `pnpm create vite frontend --template react-ts`, then extended with:
-
-- `react-router-dom` for client-side routing
-- `@tanstack/react-query` for server state management
-- `tailwindcss` + `@tailwindcss/vite` for styling
-- `vitest` + `@testing-library/react` for tests
-- `@emoji-battle/contract` (workspace dependency) for the typed API client

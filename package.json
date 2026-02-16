@@ -16,8 +16,14 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@nestjs/core",
+      "@swc/core",
       "esbuild",
       "unrs-resolver"
     ]
+  },
+  "devDependencies": {
+    "@swc/core": "^1.15.11",
+    "unplugin-swc": "^1.5.9",
+    "vitest": "^4.0.18"
   }
 }

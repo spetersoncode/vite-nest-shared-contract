@@ -3,7 +3,7 @@ import { LeaderboardController } from "../src/leaderboard/leaderboard.controller
 import { LeaderboardService } from "../src/leaderboard/leaderboard.service";
 import { FightersService } from "../src/fighters/fighters.service";
 import { BattleService } from "../src/battle/battle.service";
-import { LeaderboardEntrySchema } from "@emoji-battle/contract";
+import { LeaderboardEntrySchema } from "@emoji-battle/api-contract";
 import * as z from "zod";
 import { mockLoggerProvider } from "./helpers";
 

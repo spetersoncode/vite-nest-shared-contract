@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
-import { FIGHTER_ROSTER, type Fighter } from "@emoji-battle/contract";
+import { FIGHTER_ROSTER, type Fighter } from "@emoji-battle/api-contract";
 
 @Injectable()
 export class FightersService {
